@@ -140,6 +140,26 @@ app.get('/api/cors-test', (req, res) => {
     });
 });
 
+app.get('/api/debug-paths', (req, res) => {
+    const fs = require('fs');
+    const path = require('path');
+    const parentDir = path.join(__dirname, '..');
+    const dirnameContent = fs.readdirSync(__dirname);
+    let parentContent = [];
+    try {
+        parentContent = fs.readdirSync(parentDir);
+    } catch(e) {
+        parentContent = [e.message];
+    }
+    res.json({
+        __dirname,
+        dirnameContent,
+        parentDir,
+        parentContent,
+        frontendPathExists: fs.existsSync(path.join(__dirname, '..', 'frontend', 'public'))
+    });
+});
+
 // ==========================
 // Catch-all for SPA / 404s
 // ==========================
