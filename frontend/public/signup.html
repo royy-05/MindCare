@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Mental Health</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/signup.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <!-- Sign Up Form -->
+    <main>
+        <div class="form-container card">
+            <h2>Create an Account</h2>
+
+            <!-- Message containers -->
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <form id="signupForm">
+                <!-- User Type Selection -->
+                <div class="user-type-container">
+                    <label class="user-type-label">I am signing up as:</label>
+                    <div class="radio-group">
+                        <input type="radio" id="patient" name="userType" value="patient" checked>
+                        <label for="patient">Patient</label>
+                        <input type="radio" id="therapist" name="userType" value="therapist">
+                        <label for="therapist">Therapist</label>
+                    </div>
+                </div>
+
+                <!-- Basic Information (Common for both) -->
+                <input type="text" name="firstName" placeholder="First Name" required>
+                <input type="text" name="lastName" placeholder="Last Name" required>
+                <input type="email" name="email" placeholder="Email Address" required>
+                <input type="date" name="dateOfBirth" max="" required id="dateOfBirth">
+                <select name="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+
+                <!-- Therapist-specific fields (initially hidden) -->
+                <div id="therapistFields" class="therapist-fields" style="display: none;">
+                    <input type="text" name="licenseNumber" placeholder="Professional License Number">
+                    
+                    <select name="licenseType">
+                        <option value="">Select License Type</option>
+                        <option value="clinical-psychologist">Clinical Psychologist</option>
+                        <option value="licensed-clinical-social-worker">Licensed Clinical Social Worker (LCSW)</option>
+                        <option value="licensed-professional-counselor">Licensed Professional Counselor (LPC)</option>
+                        <option value="licensed-marriage-family-therapist">Licensed Marriage & Family Therapist (LMFT)</option>
+                        <option value="psychiatrist">Psychiatrist</option>
+                        <option value="licensed-mental-health-counselor">Licensed Mental Health Counselor (LMHC)</option>
+                        <option value="other">Other</option>
+                    </select>
+
+                    <select name="yearsExperience">
+                        <option value="">Years of Experience</option>
+                        <option value="0-1">0-1 years</option>
+                        <option value="2-5">2-5 years</option>
+                        <option value="6-10">6-10 years</option>
+                        <option value="11-15">11-15 years</option>
+                        <option value="16-20">16-20 years</option>
+                        <option value="20+">20+ years</option>
+                    </select>
+
+                    <div class="specializations-container">
+                        <label class="specializations-label">Specializations (Select all that apply):</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="anxiety" name="specializations" value="anxiety">
+                                <label for="anxiety">Anxiety Disorders</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="depression" name="specializations" value="depression">
+                                <label for="depression">Depression</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="trauma" name="specializations" value="trauma">
+                                <label for="trauma">Trauma & PTSD</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="relationships" name="specializations" value="relationships">
+                                <label for="relationships">Relationship Counseling</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="addiction" name="specializations" value="addiction">
+                                <label for="addiction">Addiction & Substance Abuse</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="family-therapy" name="specializations" value="family-therapy">
+                                <label for="family-therapy">Family Therapy</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="eating-disorders" name="specializations" value="eating-disorders">
+                                <label for="eating-disorders">Eating Disorders</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="bipolar" name="specializations" value="bipolar">
+                                <label for="bipolar">Bipolar Disorder</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <textarea name="professionalBio" placeholder="Professional Bio (Brief description of your approach and experience)" rows="4"></textarea>
+                </div>
+
+                <!-- Password fields (Common for both) -->
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="Password" required />
+                    <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                </div>
+                <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="terms" name="termsAccepted" required>
+                    <label for="terms">I agree to the <a href="#">Terms</a> & <a href="#">Privacy Policy</a></label>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-primary form-btn">Sign Up</button>
+                <p class="login-link">Already have an account? <a href="#" onclick="handleLoginRedirect()">Log In</a></p>
+            </form>
+        </div>
+    </main>
+    <div id="footer"></div>
+    <script src="scripts/signup.js"></script>
+    <script src="scripts/layout.js"></script>
+    <script src="scripts/auth.js"></script>
+</body>
+</html>

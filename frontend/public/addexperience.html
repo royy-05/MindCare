@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share Your Experience - Mental Health</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/addexperience.css">
+</head>
+<body>
+  <div id="header"></div>
+  <div class="container">
+    <div class="form-container card">
+      <a href="community.html" class="back-btn">← Back to Community</a>
+      
+      <div class="form-header">
+        <h1>Share Your Experience</h1>
+        <p>Your story can help others feel less alone. Share anonymously in our safe, supportive community.</p>
+      </div>
+
+      <div class="guidelines">
+        <h3>🛡️ Community Guidelines</h3>
+        <ul>
+          <li><strong>Be respectful</strong> - Remember there's a real person behind every story</li>
+          <li><strong>Stay anonymous</strong> - Don't share identifying information about yourself or others</li>
+          <li><strong>Focus on recovery</strong> - Share what helped you or lessons learned</li>
+          <li><strong>Be supportive</strong> - Offer hope and encouragement to others</li>
+          <li><strong>No medical advice</strong> - Share experiences, not professional recommendations</li>
+        </ul>
+      </div>
+
+      <form id="experienceForm">
+        <div class="form-group">
+          <label for="title">Story Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            class="form-input" 
+            placeholder="e.g., 'How I Overcame Social Anxiety'"
+            maxlength="100"
+            required
+          >
+          <div class="char-counter">
+            <span id="titleCounter">0</span>/100 characters
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" class="form-select" required>
+            <option value="">Select a category...</option>
+            <option value="anxiety">Anxiety</option>
+            <option value="depression">Depression</option>
+            <option value="stress">Stress & Burnout</option>
+            <option value="relationships">Relationships</option>
+            <option value="work">Work & Career</option>
+            <option value="family">Family Issues</option>
+            <option value="self-care">Self Care</option>
+            <option value="recovery">Recovery Journey</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="content">Your Story *</label>
+          <textarea 
+            id="content" 
+            class="form-textarea" 
+            placeholder="Share your experience... What challenges did you face? What helped you? What would you tell someone going through something similar?"
+            maxlength="2000"
+            required
+          ></textarea>
+          <div class="char-counter">
+            <span id="contentCounter">0</span>/2000 characters
+          </div>
+          <div class="form-help">
+            Share your journey, what strategies worked for you, or how you found support. Be as detailed or brief as you're comfortable with.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tags">Tags (Optional)</label>
+          <input 
+            type="text" 
+            id="tags" 
+            class="form-input" 
+            placeholder="Type tags and press Enter (e.g., therapy, meditation, support-group)"
+          >
+          <div class="form-help">
+            Add relevant tags to help others find your story. Press Enter after each tag.
+          </div>
+          <div class="tags-display" id="tagsDisplay"></div>
+        </div>
+
+        <button type="submit" class="btn-primary submit-btn" id="submitBtn">
+          🌿 Share Your Story
+        </button>
+      </form>
+    </div>
+  </div>
+  <div id="footer"></div>
+
+  <script>
+    class ExperienceForm {
+      constructor() {
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? (window.location.port === '5000' ? '' : 'http://localhost:5000') : '';
+        this.apiBase = `${API_BASE_URL}/api/stories`;
+        this.tags = [];
+        this.init();
+      }
+
+      init() {
+        this.setupEventListeners();
+        this.setupCharacterCounters();
+        this.setupTagsInput();
+      }
+
+      setupEventListeners() {
+        const form = document.getElementById('experienceForm');
+        form.addEventListener('submit', (e) => this.handleSubmit(e));
+      }
+
+      setupCharacterCounters() {
+        const title = document.getElementById('title');
+        const content = document.getElementById('content');
+        const titleCounter = document.getElementById('titleCounter');
+        const contentCounter = document.getElementById('contentCounter');
+
+        title.addEventListener('input', () => {
+          const count = title.value.length;
+          titleCounter.textContent = count;
+          titleCounter.className = 'char-counter';
+          if (count > 80) titleCounter.classList.add('warning');
+          if (count > 95) titleCounter.classList.add('danger');
+        });
+
+        content.addEventListener('input', () => {
+          const count = content.value.length;
+          contentCounter.textContent = count;
+          contentCounter.className = 'char-counter';
+          if (count > 1600) contentCounter.classList.add('warning');
+          if (count > 1900) contentCounter.classList.add('danger');
+        });
+      }
+
+      setupTagsInput() {
+        const tagsInput = document.getElementById('tags');
+        const tagsDisplay = document.getElementById('tagsDisplay');
+
+        tagsInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            const tag = tagsInput.value.trim().toLowerCase();
+            
+            if (tag && !this.tags.includes(tag) && this.tags.length < 5) {
+              this.tags.push(tag);
+              this.renderTags();
+              tagsInput.value = '';
+            }
+          }
+        });
+      }
+
+      renderTags() {
+        const tagsDisplay = document.getElementById('tagsDisplay');
+        tagsDisplay.innerHTML = this.tags.map(tag => `
+          <span class="tag">
+            ${tag}
+            <span class="tag-remove" onclick="experienceForm.removeTag('${tag}')">×</span>
+          </span>
+        `).join('');
+      }
+
+      removeTag(tagToRemove) {
+        this.tags = this.tags.filter(tag => tag !== tagToRemove);
+        this.renderTags();
+      }
+
+      async handleSubmit(e) {
+        e.preventDefault();
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const title = document.getElementById('title').value.trim();
+        const category = document.getElementById('category').value;
+        const content = document.getElementById('content').value.trim();
+
+        // Validation
+        if (!title || title.length < 5) {
+          this.showMessage('Title must be at least 5 characters long', 'error');
+          return;
+        }
+
+        if (!category) {
+          this.showMessage('Please select a category', 'error');
+          return;
+        }
+
+        if (!content || content.length < 20) {
+          this.showMessage('Story content must be at least 20 characters long', 'error');
+          return;
+        }
+
+        // Disable submit button
+        submitBtn.disabled = true;
+        submitBtn.textContent = '🌱 Sharing your story...';
+
+        try {
+          const response = await fetch(this.apiBase, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              title,
+              category,
+              content,
+              tags: this.tags
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            this.showMessage('✅ Your story has been shared successfully! Thank you for contributing to our community.', 'success');
+            
+            // Reset form
+            document.getElementById('experienceForm').reset();
+            this.tags = [];
+            this.renderTags();
+            
+            // Update counters
+            document.getElementById('titleCounter').textContent = '0';
+            document.getElementById('contentCounter').textContent = '0';
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = 'community.html';
+            }, 3000);
+          } else {
+            this.showMessage('❌ ' + (data.error || 'Failed to share your story. Please try again.'), 'error');
+          }
+        } catch (error) {
+          console.error('Error sharing story:', error);
+          this.showMessage('❌ Failed to connect to server. Please check your connection and try again.', 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '🌿 Share Your Story';
+        }
+      }
+
+      showMessage(message, type) {
+        // Remove existing messages
+        document.querySelectorAll('.success-message, .error-message').forEach(el => el.remove());
+
+        const messageEl = document.createElement('div');
+        messageEl.className = type === 'error' ? 'error-message' : 'success-message';
+        messageEl.textContent = message;
+
+        const form = document.getElementById('experienceForm');
+        form.parentNode.insertBefore(messageEl, form);
+
+        // Scroll to message
+        messageEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Initialize when DOM is loaded
+    let experienceForm;
+    document.addEventListener('DOMContentLoaded', () => {
+      experienceForm = new ExperienceForm();
+    });
+  </script>
+  <script src="scripts/layout.js"></script>
+  <script src="scripts/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mental Health - Peer Support Community</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/community.css">
+</head>
+<body>
+
+  <div id="header"></div>
+
+
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <h1>Peer Support Community</h1>
+        <p>Connect with others, share experiences, and find support in our safe community space</p>
+      </div>
+
+      <!-- Filters and Search -->
+      <div class="filters-section">
+        <select id="categoryFilter" class="filter-select">
+          <option value="all">All Categories</option>
+          <option value="anxiety">Anxiety</option>
+          <option value="depression">Depression</option>
+          <option value="stress">Stress</option>
+          <option value="relationships">Relationships</option>
+          <option value="work">Work</option>
+          <option value="family">Family</option>
+          <option value="self-care">Self Care</option>
+          <option value="recovery">Recovery</option>
+          <option value="other">Other</option>
+        </select>
+
+        <select id="sortFilter" class="filter-select">
+          <option value="recent">Most Recent</option>
+          <option value="popular">Most Popular</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+
+        <input type="text" id="searchBar" class="search-bar" placeholder="Search stories...">
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading stories...</p>
+      </div>
+
+      <!-- Stories Grid -->
+      <div class="stories-grid" id="storiesGrid">
+        <!-- Stories will be loaded here dynamically -->
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="paginationContainer">
+        <!-- Pagination controls will be loaded here -->
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <a href="resources.html" class="get-started-btn">📚 Resources</a>
+        <a href="addexperience.html" class="get-started-btn">✏️ Share Your Story</a>
+        <a href="community.html" class="get-started-btn">👥 Quick Support</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    class PeerSupportCommunity {
+      constructor() {
+        const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? (window.location.port === '5000' ? '' : 'http://localhost:5000') : '';
+        this.apiBase = `${API_BASE_URL}/api/stories`;
+        this.currentPage = 1;
+        this.currentCategory = 'all';
+        this.currentSort = 'recent';
+        this.searchTerm = '';
+        this.init();
+      }
+
+      async init() {
+        this.showLoading(true);
+        await this.loadStories();
+        this.setupEventListeners();
+        this.showLoading(false);
+      }
+
+      showLoading(show) {
+        const loadingEl = document.getElementById('loadingState');
+        const storiesGrid = document.getElementById('storiesGrid');
+        
+        if (show) {
+          loadingEl.style.display = 'block';
+          storiesGrid.style.display = 'none';
+        } else {
+          loadingEl.style.display = 'none';
+          storiesGrid.style.display = 'grid';
+        }
+      }
+
+      async loadStories(page = 1) {
+        try {
+          const params = new URLSearchParams({
+            page: page,
+            limit: 10,
+            category: this.currentCategory,
+            sort: this.currentSort
+          });
+
+          const response = await fetch(`${this.apiBase}?${params}`);
+          const data = await response.json();
+
+          if (data.success) {
+            this.renderStories(data.stories);
+            this.renderPagination(data.pagination);
+          } else {
+            this.showError('Failed to load stories: ' + data.error);
+          }
+        } catch (error) {
+          console.error('Error loading stories:', error);
+          this.showError('Failed to connect to server. Please try again.');
+        }
+      }
+
+      renderStories(stories) {
+        const storiesGrid = document.getElementById('storiesGrid');
+        
+        if (stories.length === 0) {
+          storiesGrid.innerHTML = `
+            <div class="no-stories card">
+              <h3>No stories found</h3>
+              <p>Be the first to share your experience in this category!</p>
+              <a href="addexperience.html" class="get-started-btn">Share Your Story</a>
+            </div>
+          `;
+          return;
+        }
+
+        storiesGrid.innerHTML = stories.map(story => `
+          <div class="story-card card" data-story-id="${story._id}">
+            <h2>${this.escapeHtml(story.title)}</h2>
+            <div class="story-meta">
+              <span class="anonymous-id">Anonymous User #${story.anonymousId}</span>
+              <span>${story.timeAgo}</span>
+              ${story.category !== 'other' ? `<span class="category-tag">#${story.category}</span>` : ''}
+            </div>
+            <div class="story-content">${this.formatContent(story.content)}</div>
+
+            <div class="interaction-bar">
+              <button class="action-btn like-btn" data-story-id="${story._id}">
+                👍 <span class="like-count">${story.likes}</span>
+              </button>
+              <button class="action-btn reply-btn" data-story-id="${story._id}">
+                💬 Replies (${story.replies.length})
+              </button>
+              <button class="action-btn report-btn" data-story-id="${story._id}">
+                ⚠️ Report
+              </button>
+            </div>
+
+            <div class="reply-form" style="display: none;">
+              <textarea placeholder="Share your thoughts... (max 500 characters)" maxlength="500"></textarea>
+              <div class="reply-form-actions">
+                <button class="submit-reply" data-story-id="${story._id}">Post Reply</button>
+                <button class="cancel-reply">Cancel</button>
+              </div>
+            </div>
+
+            <div class="replies-section">
+              ${story.replies.map(reply => `
+                <div class="reply-item">
+                  <div class="reply-header">
+                    <span class="anonymous-id">Anonymous User #${reply.anonymousId}</span>
+                    <span class="reply-time">${reply.timeAgo}</span>
+                  </div>
+                  <div class="reply-content">${this.escapeHtml(reply.content)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+
+        this.attachStoryEventListeners();
+      }
+
+      renderPagination(pagination) {
+        const container = document.getElementById('paginationContainer');
+        
+        if (pagination.pages <= 1) {
+          container.innerHTML = '';
+          return;
+        }
+
+        let paginationHTML = '<div class="pagination-controls">';
+        
+        // Previous button
+        if (pagination.page > 1) {
+          paginationHTML += `<button class="pagination-btn" data-page="${pagination.page - 1}">← Previous</button>`;
+        }
+        
+        // Page numbers
+        const startPage = Math.max(1, pagination.page - 2);
+        const endPage = Math.min(pagination.pages, pagination.page + 2);
+        
+        if (startPage > 1) {
+          paginationHTML += `<button class="pagination-btn" data-page="1">1</button>`;
+          if (startPage > 2) paginationHTML += '<span>...</span>';
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+          const isActive = i === pagination.page ? 'active' : '';
+          paginationHTML += `<button class="pagination-btn ${isActive}" data-page="${i}">${i}</button>`;
+        }
+        
+        if (endPage < pagination.pages) {
+          if (endPage < pagination.pages - 1) paginationHTML += '<span>...</span>';
+          paginationHTML += `<button class="pagination-btn" data-page="${pagination.pages}">${pagination.pages}</button>`;
+        }
+        
+        // Next button
+        if (pagination.page < pagination.pages) {
+          paginationHTML += `<button class="pagination-btn" data-page="${pagination.page + 1}">Next →</button>`;
+        }
+        
+        paginationHTML += '</div>';
+        container.innerHTML = paginationHTML;
+        this.attachPaginationListeners();
+      }
+
+      setupEventListeners() {
+        // Category filter
+        document.getElementById('categoryFilter').addEventListener('change', (e) => {
+          this.currentCategory = e.target.value;
+          this.currentPage = 1;
+          this.showLoading(true);
+          this.loadStories().then(() => this.showLoading(false));
+        });
+
+        // Sort filter
+        document.getElementById('sortFilter').addEventListener('change', (e) => {
+          this.currentSort = e.target.value;
+          this.currentPage = 1;
+          this.showLoading(true);
+          this.loadStories().then(() => this.showLoading(false));
+        });
+
+        // Search bar
+        let searchTimeout;
+        document.getElementById('searchBar').addEventListener('input', (e) => {
+          clearTimeout(searchTimeout);
+          this.searchTerm = e.target.value;
+          
+          searchTimeout = setTimeout(() => {
+            this.currentPage = 1;
+            this.showLoading(true);
+            this.loadStories().then(() => this.showLoading(false));
+          }, 500);
+        });
+      }
+
+      attachStoryEventListeners() {
+        // Like buttons
+        document.querySelectorAll('.like-btn').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const storyId = button.dataset.storyId;
+            await this.toggleLike(storyId, button);
+          });
+        });
+
+        // Reply buttons
+        document.querySelectorAll('.reply-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const storyCard = button.closest('.story-card');
+            const replyForm = storyCard.querySelector('.reply-form');
+            replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+          });
+        });
+
+        // Submit reply buttons
+        document.querySelectorAll('.submit-reply').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const storyId = button.dataset.storyId;
+            const textarea = button.closest('.reply-form').querySelector('textarea');
+            await this.submitReply(storyId, textarea.value, button);
+          });
+        });
+
+        // Cancel reply buttons
+        document.querySelectorAll('.cancel-reply').forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const replyForm = button.closest('.reply-form');
+            replyForm.style.display = 'none';
+            replyForm.querySelector('textarea').value = '';
+          });
+        });
+
+        // Report buttons
+        document.querySelectorAll('.report-btn').forEach(button => {
+          button.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const storyId = button.dataset.storyId;
+            await this.reportStory(storyId);
+          });
+        });
+      }
+
+      attachPaginationListeners() {
+        document.querySelectorAll('.pagination-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const page = parseInt(e.target.dataset.page);
+            if (page && page !== this.currentPage) {
+              this.currentPage = page;
+              this.showLoading(true);
+              this.loadStories(page).then(() => this.showLoading(false));
+              
+              // Scroll to top
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          });
+        });
+      }
+
+      async toggleLike(storyId, button) {
+        try {
+          const response = await fetch(`${this.apiBase}/${storyId}/like`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            const countEl = button.querySelector('.like-count');
+            countEl.textContent = data.likes;
+            
+            // Visual feedback
+            if (data.hasLiked) {
+              button.classList.add('liked');
+            } else {
+              button.classList.remove('liked');
+            }
+            
+            button.style.transform = 'scale(1.05)';
+            setTimeout(() => button.style.transform = '', 150);
+            
+            this.showMessage(data.message, 'success');
+          }
+        } catch (error) {
+          console.error('Error liking story:', error);
+          this.showMessage('Failed to like story', 'error');
+        }
+      }
+
+      async submitReply(storyId, content, button) {
+        if (!content.trim()) {
+          this.showMessage('Please write something before submitting', 'error');
+          return;
+        }
+
+        try {
+          button.disabled = true;
+          button.textContent = 'Posting...';
+
+          const response = await fetch(`${this.apiBase}/${storyId}/reply`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: content.trim() })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Add reply to DOM
+            const storyCard = button.closest('.story-card');
+            const repliesSection = storyCard.querySelector('.replies-section');
+            
+            const newReply = document.createElement('div');
+            newReply.className = 'reply-item';
+            newReply.innerHTML = `
+              <div class="reply-header">
+                <span class="anonymous-id">Anonymous User #${data.reply.anonymousId}</span>
+                <span class="reply-time">${data.reply.timeAgo}</span>
+              </div>
+              <div class="reply-content">${this.escapeHtml(data.reply.content)}</div>
+            `;
+            repliesSection.appendChild(newReply);
+
+            // Update reply count
+            const replyBtn = storyCard.querySelector('.reply-btn');
+            const currentCount = repliesSection.children.length;
+            replyBtn.innerHTML = `💬 Replies (${currentCount})`;
+
+            // Clear and hide form
+            const replyForm = button.closest('.reply-form');
+            replyForm.querySelector('textarea').value = '';
+            replyForm.style.display = 'none';
+
+            this.showMessage('Reply posted successfully!', 'success');
+          } else {
+            this.showMessage(data.error || 'Failed to post reply', 'error');
+          }
+        } catch (error) {
+          console.error('Error posting reply:', error);
+          this.showMessage('Failed to post reply. Please try again.', 'error');
+        } finally {
+          button.disabled = false;
+          button.textContent = 'Post Reply';
+        }
+      }
+
+      async reportStory(storyId) {
+        const reasons = [
+          'Inappropriate content',
+          'Spam',
+          'Harassment or bullying',
+          'False information',
+          'Self-harm content',
+          'Other'
+        ];
+
+        const reason = prompt(`Why are you reporting this story?\n\nSelect a number:\n${reasons.map((r, i) => `${i + 1}. ${r}`).join('\n')}`);
+        
+        if (!reason || isNaN(reason) || reason < 1 || reason > reasons.length) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${this.apiBase}/${storyId}/report`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: reasons[reason - 1] })
+          });
+
+          const data = await response.json();
+          
+          if (data.success) {
+            this.showMessage('Thank you for reporting. We\'ll review this content.', 'success');
+          } else {
+            this.showMessage(data.error || 'Failed to report story', 'error');
+          }
+        } catch (error) {
+          console.error('Error reporting story:', error);
+          this.showMessage('Failed to report story. Please try again.', 'error');
+        }
+      }
+
+      formatContent(content) {
+        // Format content with line breaks and basic formatting
+        return this.escapeHtml(content)
+          .replace(/\n/g, '<br>')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>');
+      }
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      showMessage(message, type = 'info') {
+        // Remove existing messages
+        document.querySelectorAll('.toast-message').forEach(el => el.remove());
+
+        const messageEl = document.createElement('div');
+        messageEl.className = `toast-message ${type}`;
+        messageEl.textContent = message;
+        messageEl.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 24px;
+          border-radius: 25px;
+          color: white;
+          font-weight: 500;
+          z-index: 1000;
+          animation: slideIn 0.3s ease;
+          max-width: 300px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        `;
+        
+        if (type === 'success') {
+          messageEl.style.background = 'linear-gradient(135deg, #4CAF50, #66BB6A)';
+        } else if (type === 'error') {
+          messageEl.style.background = 'linear-gradient(135deg, #f44336, #ef5350)';
+        } else {
+          messageEl.style.background = 'linear-gradient(135deg, #2196F3, #42a5f5)';
+        }
+
+        document.body.appendChild(messageEl);
+
+        setTimeout(() => {
+          messageEl.style.animation = 'slideOut 0.3s ease';
+          setTimeout(() => messageEl.remove(), 300);
+        }, 4000);
+      }
+
+      showError(message) {
+        const storiesGrid = document.getElementById('storiesGrid');
+        storiesGrid.innerHTML = `
+          <div class="no-stories card">
+            <h3>⚠️ Unable to Load Stories</h3>
+            <p>${message}</p>
+            <button onclick="location.reload()" class="get-started-btn" style="margin-top: 1rem;">
+              🔄 Try Again
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      new PeerSupportCommunity();
+    });
+  </script>
+    <script src="scripts/layout.js"></script>
+  <script src="scripts/auth.js"></script>
+
+</body>
+</html>

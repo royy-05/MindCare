@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare</title>
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/home.css">
+</head>
+
+<body>
+    <div id="header"></div>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Welcome to <span>MindCare</span></h1>
+                <p>Your companion for mental health and well-being
+                </p>
+                <button class="btn-primary get-started-btn">Get started</button>
+            </div>
+            <div class="hero-image">
+                <img src="hero_illustration.png" alt="Mental Health Illustration" style="display: block; width: 100%; max-width: 480px; height: auto; border-radius: 24px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05); transition: transform 0.3s ease;">
+            </div>
+        </div>
+        <div class="wave-pattern"></div>
+    </section>
+    <section class="services" id="services">
+        <div class="container">
+            <h2>Your mental wellness journey starts here</h2>
+            <p class="services-subtitle">We're here to support you on your path to mental wellness</p>
+
+            <div class="action-buttons">
+                <a href="assessment.html"> <button class="assessment-btn">Take Assessment</button></a>
+                <a href="chat.html"> <button class="chat-btn">Talk to AI Chat</button></a>
+            </div>
+
+            <div class="services-grid">
+                <a href="chat.html" class="service-card card">
+                    <div class="service-icon">💬</div>
+                    <h3>AI Chat</h3>
+                </a>
+                <a href="community.html" class="service-card card">
+                    <div class="service-icon">👥</div>
+                    <h3>Peer Support</h3>
+                </a>
+                <a href="assessment.html" class="service-card card">
+                    <div class="service-icon">📋</div>
+                    <h3>Assessment</h3>
+                </a>
+                <a href="Booking.html" class="service-card card">
+                    <div class="service-icon">📅</div>
+                    <h3>Booking</h3>
+                </a>
+            </div>
+
+
+            <div class="footer-links">
+                <a href="#contact">Contact</a>
+                <a href="#emergency">Emergency</a>
+                <a href="#accessibility">Accessibility</a>
+            </div>
+        </div>
+    </section>
+    <script>
+        // Handle get started button
+        document.querySelector('.get-started-btn').addEventListener('click', function () {
+            // Check if user is logged in
+            const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+
+            if (token) {
+                // User is logged in, scroll to services section
+                const servicesSection = document.getElementById('services');
+                if (servicesSection) {
+                    servicesSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } else {
+                // User not logged in, redirect to login first
+                window.location.href = 'Login.html';
+            }
+        });
+    </script>
+    <div id="footer"></div>
+    <script src="scripts/layout.js"></script>
+    <script src="scripts/auth.js"></script>
+</body>
+
+</html>

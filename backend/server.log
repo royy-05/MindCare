@@ -1,0 +1,22 @@
+[dotenv@17.2.2] injecting env (6) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+(node:23716) [MONGODB DRIVER] Warning: useNewUrlParser is a deprecated option: useNewUrlParser has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23716) [MONGODB DRIVER] Warning: useUnifiedTopology is a deprecated option: useUnifiedTopology has no effect since Node.js Driver version 4.0.0 and will be removed in the next major version
+(node:23716) [MONGOOSE] Warning: Duplicate schema index on {"sessionId":1} found. This is often due to declaring an index using both "index: true" and "schema.index()". Please remove the duplicate index definition.
+
+🚀 Server running on port 5000
+📝 Visit http://localhost:5000 to view your app
+🔗 API endpoints available at http://localhost:5000/api/
+🌐 CORS enabled for origins: [
+  'http://localhost:5500',
+  'http://localhost:5502',
+  'http://localhost:3000',
+  'http://127.0.0.1:5500',
+  'http://127.0.0.1:5502',
+  'http://127.0.0.1:3000',
+  'http://localhost:5000'
+]
+📊 Environment: development
+🧪 Test CORS: http://localhost:5000/api/cors-test
+
+✅ MongoDB connected successfully

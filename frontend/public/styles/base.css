@@ -1,0 +1,138 @@
+/* ===== MindCare design tokens & primitives ===== */
+:root {
+  --color-primary: #4CAF50;
+  --color-primary-dark: #388E3C;
+  --color-primary-light: #66BB6A;
+  --color-primary-tint: #f0fdf4;
+  --color-primary-tint-strong: #e8f5e8;
+
+  --color-text: #1a1a1a;
+  --color-text-muted: #5b6573;
+  --color-text-faint: #8a94a3;
+
+  --color-bg: #f8faf9;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+
+  --color-error: #b91c1c;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fee2e2;
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #dcfce7;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --shadow-sm: 0 1px 3px rgba(16, 24, 32, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 24, 32, 0.08);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+a {
+  color: inherit;
+}
+
+/* ===== Shared primitives ===== */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background: var(--color-border);
+  color: var(--color-text-faint);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.error-message {
+  display: none;
+  color: var(--color-error);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-error-bg);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.success-message {
+  display: none;
+  color: var(--color-success);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-success-bg);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: left;
+}

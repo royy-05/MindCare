@@ -1,0 +1,153 @@
+<style>
+  .header {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 1rem 0;
+  }
+
+  .header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .logo-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 15px;
+  }
+
+  .nav-list {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+  }
+
+  .nav-link {
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--color-primary);
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .welcome-text {
+    color: var(--color-text);
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .logout-btn {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .logout-btn:hover {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .login-btn {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .login-btn:hover {
+    background: var(--color-primary-dark);
+  }
+
+  @media (max-width: 768px) {
+    .header .container {
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .nav {
+      width: 100%;
+      order: 3;
+    }
+
+    .nav-list {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .logo {
+      font-size: 1.1rem;
+    }
+
+    .welcome-text {
+      display: none;
+    }
+  }
+</style>
+
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">🌿</div>
+      <span>MindCare</span>
+    </div>
+    <nav class="nav">
+      <ul class="nav-list">
+        <li><a href="Home.html" class="nav-link">Home</a></li>
+        <li><a href="chat.html" class="nav-link">AI Chat</a></li>
+        <li><a href="community.html" class="nav-link">Peer Support</a></li>
+        <li><a href="Booking.html" class="nav-link">Booking</a></li>
+        <li><a href="assessment.html" class="nav-link">Assessment</a></li>
+      </ul>
+    </nav>
+
+    <div class="user-info" id="userInfo" style="display: none;">
+      <span class="welcome-text">Welcome, <span id="userName">Guest</span>!</span>
+      <button class="logout-btn">Logout</button>
+    </div>
+
+    <a href="Login.html" id="loginBtnLink"><button class="login-btn" id="loginBtn">Login</button></a>
+  </div>
+</header>

@@ -1,0 +1,248 @@
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  padding: 3rem 0 5rem;
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--space-4);
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+  letter-spacing: -0.02em;
+}
+
+.page-header p {
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== BOOKING LAYOUT ===== */
+.booking-container {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+
+/* ===== CALENDAR ===== */
+.calendar-section,
+.booking-options {
+  padding: var(--space-3);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.calendar-btn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-size: 1.1rem;
+  color: var(--color-text-muted);
+}
+
+.calendar-btn:hover {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.current-month {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calendar-day-header {
+  padding: 0.6rem 0.4rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+  min-height: 40px;
+  border: 1px solid transparent;
+}
+
+.calendar-day:hover {
+  background: var(--color-bg);
+}
+
+.calendar-day.available {
+  background: var(--color-primary-tint);
+  color: var(--color-primary-dark);
+  border-color: rgba(76, 175, 80, 0.2);
+}
+
+.calendar-day.available:hover {
+  border-color: var(--color-primary);
+}
+
+.calendar-day.selected {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.calendar-day.today {
+  border: 2px solid var(--color-primary);
+  color: var(--color-text);
+}
+
+.calendar-day.unavailable {
+  color: var(--color-border);
+  cursor: not-allowed;
+  background: var(--color-bg);
+}
+
+.calendar-day.other-month {
+  color: var(--color-border);
+}
+
+/* ===== BOOKING OPTIONS ===== */
+.section-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-2);
+}
+
+.therapist-dropdown {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.therapist-dropdown:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+  outline: none;
+}
+
+.time-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.time-slot {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.time-slot:hover {
+  border-color: var(--color-primary);
+}
+
+.time-slot.selected {
+  background: var(--color-primary);
+  border-color: transparent;
+  color: white;
+}
+
+.time-slot-time {
+  font-weight: 700;
+}
+
+.time-slot-type {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: rgba(76, 175, 80, 0.12);
+  color: var(--color-primary-dark);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.time-slot.selected .time-slot-type {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ===== BOOKING BUTTON ===== */
+.book-appointment-btn {
+  width: 100%;
+  margin-top: var(--space-3);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .booking-container {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .main-content {
+    padding: 2rem 0 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar-section,
+  .booking-options {
+    padding: 1.25rem;
+  }
+}

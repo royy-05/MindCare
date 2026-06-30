@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mental Health - Booking</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/booking.css">
+</head>
+
+<body>
+  <div id="header"></div>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1>Booking</h1>
+        <p>Securely book your appointment with our therapist</p>
+      </div>
+
+      <div class="booking-container">
+        <!-- LEFT SIDE: CALENDAR -->
+        <div class="calendar-section card">
+          <div class="calendar-nav">
+            <button class="calendar-btn" onclick="previousMonth()">‹</button>
+            <div class="current-month" id="currentMonth">July 2024</div>
+            <button class="calendar-btn" onclick="nextMonth()">›</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <div class="calendar-day-header">Mon</div>
+            <div class="calendar-day-header">Tue</div>
+            <div class="calendar-day-header">Wed</div>
+            <div class="calendar-day-header">Thu</div>
+            <div class="calendar-day-header">Fri</div>
+            <div class="calendar-day-header">Sat</div>
+            <div class="calendar-day-header">Sun</div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE: THERAPIST + TIME SLOTS -->
+        <div class="booking-options card">
+          <label for="therapistSelect" class="section-title">Select a therapist</label>
+          <select id="therapistSelect" class="therapist-dropdown">
+            <option value="">Loading therapists...</option>
+          </select>
+
+          <div class="time-slots">
+            <div class="time-slot" onclick="selectTimeSlot(this)">
+              <span class="time-slot-time">10:00 AM</span>
+              <span class="time-slot-type">ONLINE</span>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this)">
+              <span class="time-slot-time">12:30 PM</span>
+              <span class="time-slot-type">OFFLINE</span>
+            </div>
+            <div class="time-slot" onclick="selectTimeSlot(this)">
+              <span class="time-slot-time">03:30 PM</span>
+              <span class="time-slot-type">ONLINE</span>
+            </div>
+          </div>
+
+          <button class="btn-primary book-appointment-btn" id="bookBtn" onclick="bookAppointment()" disabled>
+            Book Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer"></div>
+
+  <script>
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? (window.location.port === '5000' ? '' : 'http://localhost:5000') : '';
+    let selectedDate = null;
+    let selectedTime = null;
+    let currentMonth = 11; // July (0-based)
+    let currentYear = 2025;
+    let therapists = []; // Store loaded therapists
+
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // Load therapists when page loads
+    async function loadTherapists() {
+      const therapistSelect = document.getElementById('therapistSelect');
+      
+      try {
+        console.log('🔄 Loading therapists...');
+        
+        const response = await fetch(`${API_BASE_URL}/api/therapists`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.therapists) {
+          therapists = data.therapists;
+          console.log(`✅ Loaded ${therapists.length} therapists`);
+          
+          // Clear loading option
+          therapistSelect.innerHTML = '';
+          
+          // Add default option
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Select a therapist';
+          therapistSelect.appendChild(defaultOption);
+          
+          // Add "All Therapists" option
+          const allOption = document.createElement('option');
+          allOption.value = 'all';
+          allOption.textContent = 'All Therapists';
+          therapistSelect.appendChild(allOption);
+          
+          // Add each therapist
+          therapists.forEach(therapist => {
+            const option = document.createElement('option');
+            option.value = therapist._id;
+            option.textContent = therapist.displayName;
+            option.dataset.specializations = therapist.specializations;
+            option.dataset.licenseType = therapist.licenseType;
+            therapistSelect.appendChild(option);
+          });
+          
+          console.log('📋 Therapist dropdown populated');
+          
+        } else {
+          throw new Error('Invalid response format');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error loading therapists:', error);
+        
+        // Show error in dropdown
+        therapistSelect.innerHTML = '';
+        const errorOption = document.createElement('option');
+        errorOption.value = '';
+        errorOption.textContent = 'Error loading therapists';
+        therapistSelect.appendChild(errorOption);
+        
+        // Fallback to hardcoded options
+        setTimeout(() => {
+          therapistSelect.innerHTML = `
+            <option value="">Select a therapist</option>
+            <option value="all">All Therapists</option>
+            <option value="fallback1">Dr. Smith (General Practice)</option>
+            <option value="fallback2">Dr. Johnson (Anxiety, Depression)</option>
+          `;
+        }, 2000);
+      }
+    }
+
+    function generateCalendar() {
+      const calendarGrid = document.getElementById('calendarGrid');
+      // Clear existing days (keep headers)
+      const headers = calendarGrid.querySelectorAll('.calendar-day-header');
+      calendarGrid.innerHTML = '';
+      headers.forEach(header => calendarGrid.appendChild(header));
+
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+      const daysInMonth = lastDayOfMonth.getDate();
+      const startingDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Convert Sunday=0 to Monday=0
+
+      document.getElementById('currentMonth').textContent = `${months[currentMonth]} ${currentYear}`;
+
+      // Add days from previous month
+      const prevMonth = new Date(currentYear, currentMonth, 0);
+      const daysInPrevMonth = prevMonth.getDate();
+      for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+        const dayEl = document.createElement('div');
+        dayEl.textContent = daysInPrevMonth - i;
+        dayEl.classList.add('calendar-day', 'other-month');
+        calendarGrid.appendChild(dayEl);
+      }
+
+      // Add days of current month
+      const today = new Date();
+      const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+      const todayDate = today.getDate();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.textContent = day;
+        dayEl.classList.add('calendar-day');
+
+        // Highlight today's date if we're viewing the current month
+        if (isCurrentMonth && day === todayDate) {
+          dayEl.classList.add('today');
+        } else {
+          dayEl.classList.add('available');
+          dayEl.addEventListener('click', function () {
+            selectDate(day, this);
+          });
+        }
+
+        calendarGrid.appendChild(dayEl);
+      }
+
+      // Add days from next month to fill the grid
+      const remainingCells = 42 - (startingDayOfWeek + daysInMonth); // 6 rows * 7 days = 42
+      for (let day = 1; day <= remainingCells; day++) {
+        const dayEl = document.createElement('div');
+        dayEl.textContent = day;
+        dayEl.classList.add('calendar-day', 'other-month');
+        calendarGrid.appendChild(dayEl);
+      }
+    }
+
+    function selectDate(day, dayElement) {
+      // Clear previous selected date
+      document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
+      dayElement.classList.add('selected');
+      selectedDate = `${months[currentMonth]} ${day}, ${currentYear}`;
+      updateBookButton();
+    }
+
+    function selectTimeSlot(slotEl) {
+      // Clear previous selected time slot
+      document.querySelectorAll('.time-slot.selected').forEach(el => el.classList.remove('selected'));
+      slotEl.classList.add('selected');
+      selectedTime = slotEl.querySelector('.time-slot-time').textContent;
+      updateBookButton();
+    }
+
+    function updateBookButton() {
+      const btn = document.getElementById('bookBtn');
+      if (selectedDate && selectedTime) {
+        btn.disabled = false;
+      } else {
+        btn.disabled = true;
+      }
+    }
+
+    function previousMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      resetSelection();
+      generateCalendar();
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      resetSelection();
+      generateCalendar();
+    }
+
+    function resetSelection() {
+      selectedDate = null;
+      selectedTime = null;
+      document.querySelectorAll('.calendar-day.selected').forEach(el => el.classList.remove('selected'));
+      document.querySelectorAll('.time-slot.selected').forEach(el => el.classList.remove('selected'));
+      updateBookButton();
+    }
+
+    async function bookAppointment() {
+      if (selectedDate && selectedTime) {
+        const therapistSelect = document.getElementById("therapistSelect");
+        const selectedTherapistId = therapistSelect.value;
+        const selectedTherapistName = therapistSelect.options[therapistSelect.selectedIndex].text;
+
+        const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+        if (!token) {
+          alert("Please log in to book an appointment.");
+          window.location.href = 'Login.html';
+          return;
+        }
+
+        const bookingData = {
+          therapistId: selectedTherapistId,
+          therapist: selectedTherapistName,
+          date: selectedDate,
+          time: selectedTime,
+          type: document.querySelector(".time-slot.selected .time-slot-type").textContent
+        };
+
+        try {
+          console.log('📅 Booking appointment:', bookingData);
+          
+          const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+            method: "POST",
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(bookingData)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const result = await response.json();
+          alert(`✅ Appointment booked!\nTherapist: ${selectedTherapistName}\nDate: ${selectedDate}\nTime: ${selectedTime}`);
+          resetSelection();
+          
+        } catch (error) {
+          console.error("Booking error:", error);
+          alert("❌ Failed to book appointment: " + error.message);
+        }
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('📱 Page loaded, initializing...');
+      generateCalendar();
+      loadTherapists();
+    });
+  </script>
+    <script src="scripts/layout.js"></script>
+  <script src="scripts/auth.js"></script>
+</body>
+
+</html>

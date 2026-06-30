@@ -1,0 +1,85 @@
+<style>
+  .footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 2.5rem 0;
+    margin-top: 4rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .footer-logo {
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.05rem;
+  }
+
+  .footer-links-group {
+    display: flex;
+    gap: 1.75rem;
+    align-items: center;
+  }
+
+  .footer-link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-copyright {
+    color: var(--color-text-faint);
+    font-size: 0.8rem;
+    width: 100%;
+    text-align: center;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1.25rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .footer-links-group {
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+  }
+</style>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-logo">
+        <span>🌿</span> MindCare
+      </div>
+      <div class="footer-links-group">
+        <a href="Home.html" class="footer-link">Home</a>
+        <a href="chat.html" class="footer-link">AI Chat</a>
+        <a href="community.html" class="footer-link">Peer Support</a>
+        <a href="Booking.html" class="footer-link">Booking</a>
+        <a href="assessment.html" class="footer-link">Assessment</a>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <p>&copy; 2026 MindCare. All rights reserved. • Safe Space • Anonymous • Supportive</p>
+    </div>
+  </div>
+</footer>

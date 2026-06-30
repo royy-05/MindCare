@@ -1,0 +1,122 @@
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Login Card ===== */
+.login-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
+}
+
+.card {
+  padding: var(--space-4);
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.card h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.02em;
+}
+
+.card input {
+  width: 100%;
+  padding: 0.8rem 1.1rem;
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  color: var(--color-text);
+}
+
+.card input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.options a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.options a:hover {
+  text-decoration: underline;
+}
+
+.login-submit-btn {
+  width: 100%;
+}
+
+.signup-text {
+  margin-top: var(--space-3);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.signup-text a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+input:invalid {
+  border-color: #e74c3c;
+}
+
+/* ===== Password visibility toggle ===== */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input[type="password"],
+.password-container input[type="text"] {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  user-select: none;
+  z-index: 1;
+  padding: 5px;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: var(--color-text);
+}
