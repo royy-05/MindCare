@@ -245,4 +245,23 @@
   .booking-options {
     padding: 1.25rem;
   }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-day {
+    min-height: 35px;
+    font-size: 0.85rem;
+  }
+
+  .calendar-day-header {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.7rem;
+  }
+
+  .time-slot {
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+  }
 }

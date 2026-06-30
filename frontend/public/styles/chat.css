@@ -111,3 +111,28 @@
     max-width: 90%;
   }
 }
+
+@media (max-width: 480px) {
+  .main {
+    padding: 1.5rem 0;
+  }
+
+  .ai-chat-section h1 {
+    font-size: 1.6rem;
+  }
+
+  .ai-chat-section p {
+    font-size: 1rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .chat-box {
+    height: 400px;
+    margin: 0 0.5rem;
+  }
+
+  .message {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+}
