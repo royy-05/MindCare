@@ -151,12 +151,19 @@ app.get('/api/debug-paths', (req, res) => {
     } catch(e) {
         parentContent = [e.message];
     }
+    let frontendPublicContent = [];
+    try {
+        frontendPublicContent = fs.readdirSync(path.join(__dirname, '..', 'frontend', 'public'));
+    } catch(e) {
+        frontendPublicContent = [e.message];
+    }
     res.json({
         __dirname,
         dirnameContent,
         parentDir,
         parentContent,
-        frontendPathExists: fs.existsSync(path.join(__dirname, '..', 'frontend', 'public'))
+        frontendPathExists: fs.existsSync(path.join(__dirname, '..', 'frontend', 'public')),
+        frontendPublicContent
     });
 });
 
