@@ -1,5 +1,7 @@
 # 🌿 MindCare - Premium Full-Stack Mental Health Companion
 
+**Live Demo:** [mindcare-oqoo.onrender.com](https://mindcare-oqoo.onrender.com/)
+
 MindCare is a modern, responsive, full-stack mental health application designed to provide anonymous peer support, AI-powered conversational guidance, self-assessments, and professional therapist booking.
 
 Designed with a premium **glassmorphic UI**, fluid micro-animations, and unified layout styling, the platform is optimized for both desktop and mobile environments.
